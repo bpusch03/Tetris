@@ -9,7 +9,7 @@ pygame.init()
 FPS = 60
 FramePerSec = pygame.time.Clock()
 
-SPEED = 3      00
+SPEED = 300
 GAME_TICK = pygame.USEREVENT +1
 pygame.time.set_timer(GAME_TICK,SPEED)
 
@@ -118,6 +118,38 @@ class Game:
             self.grid.set_bin(row, col, 1)
             self.grid.set_color(row,col,color)
 
+    def row_clear(self):
+        row = []
+        for r in range(20):         #there are errors arising with this method
+            clear = True
+            for c in range(10):
+                if self.grid.get_bin(r,c) == 0:
+                    clear = False
+
+            if clear:
+                row.append(r)
+
+        self.shift_static_down(row)
+
+    def shift_static_down(self, list1):
+        temp0 = []
+        temp1 = []
+        for i in list1:
+            for c1 in range(10):
+                temp0.append(self.grid.get_bin(0, c1))
+            #temp0 = self.grid.get_bin(0,0)
+            for r in range(i):
+                for c in range(10):
+                    # temp0 = self.grid.get_bin(r, c)
+                    temp1.append(self.grid.get_bin(r+1, c))
+                    self.grid.set_bin(r+1, c, temp0[c])
+                temp0 = temp1.copy()
+                temp1.clear()
+            for c in range(10):
+                self.grid.set_bin(0, c, 0)
+
+
+
     '''this method isn't actually necessary since it is the same as the collision method,
             however I think it makes it more clear. The only important thing is when you call it, which is 
             right after a new active shape object is created'''
@@ -147,10 +179,11 @@ class Game:
                         self.shift_down()
                 if self.check_collision():
                     self.paste_onto_grid()
+                    self.row_clear()
                     self.create_activeShape()
-                    if self.check_game_over():
+                    '''if self.check_game_over():
                         self.label_suface.blit(font.render("Game Over", True, BLACK), (0,0))
-                        pause_toggle = False # stopped here --> this is all jank
+                        pause_toggle = False # stopped here --> this is all jank'''
 
                 self.DISPLAY.fill(BLACK)
                 self.draw_scoreboard()

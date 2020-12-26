@@ -9,7 +9,7 @@ pygame.init()
 FPS = 60
 FramePerSec = pygame.time.Clock()
 
-SPEED = 1000
+SPEED = 3      00
 GAME_TICK = pygame.USEREVENT +1
 pygame.time.set_timer(GAME_TICK,SPEED)
 

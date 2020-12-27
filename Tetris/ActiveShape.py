@@ -25,12 +25,12 @@ class ActiveShape():
         return cloned_list
 
     # returns true if the intended shift is valid,  false otherwise
-    def check_shift_shape(self, shift):
+    def check_shift_shape(self, shift, grid):
         coords_test = self.clone_coords()
 
         for i in range(4):
             coords_test[i][0] = coords_test[i][0] + shift
-            if coords_test[i][0] > 9 or coords_test[i][0] < 0:
+            if coords_test[i][0] > 9 or coords_test[i][0] < 0 or grid.get_bin(coords_test[i][1],coords_test[i][0]) == 1:
                 del coords_test
                 return False
 
@@ -52,7 +52,7 @@ class ActiveShape():
         for i in range(4):
             self.coords[i][0][0] = self.coords[i][0][0] + shift
         self.center_of_rotation[0] = self.center_of_rotation[0]+ shift
-        print(self.center_of_rotation)
+        #print(self.center_of_rotation)
 
     def rotate_shape(self,grid): #parameter is grid object
         rotation_coords = [[0,0], [0,0], [0,0], [0,0]]

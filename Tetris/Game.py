@@ -9,9 +9,7 @@ pygame.init()
 FPS = 60
 FramePerSec = pygame.time.Clock()
 
-SPEED = 300
-GAME_TICK = pygame.USEREVENT +1
-pygame.time.set_timer(GAME_TICK,SPEED)
+
 
 
 WHITE = (255, 255, 255)
@@ -40,19 +38,33 @@ class Game:
         self.DISPLAY.fill(BLACK)
         # i don't have a game surface Surface object, im drawing right onto the display
         self.label_suface = pygame.Surface((UIWIDTH, GAMEHEIGHT))
-        self.score = font.render("Score: {}".format(str(0)), True, BLACK)
+        self.score = 0
 
-    def draw_scoreboard(self):  # also updates it
-        self.update_score()
+        self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
+        self.level = 0
+        self.SPEED = 300
+        self.GAME_TICK = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.GAME_TICK, self.SPEED)
+
+    def draw_scoreboard(self):
+        score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
         self.label_suface.fill(WHITE)
-        self.label_suface.blit(self.score, (0, GAMEHEIGHT/2))  # how do I make this go in the center
+        self.label_suface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
         self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
 
-    def update_score(self):  # don't know how the score works yet
-        pass
+    def update_score(self, num_rows):  # don't know how the score works yet
+        if num_rows == 1:
+            self.score = self.score + 40 * (self.level + 1)
+        elif num_rows == 2:
+            self.score = self.score + 100 * (self.level + 1)
+        elif num_rows == 3:
+            self.score = self.score + 300 * (self.level + 1)
+        elif num_rows == 4:
+            self.score = self.score + 1200 * (self.level + 1)
 
     def create_activeShape(self):
-        self.activeShape.create_shapes(random.randint(1, 7))
+        self.activeShape = ActiveShape()
+        self.activeShape.create_shapes(random.randint(1,7))
 
     def draw_activeShape(self):
         for i in range(4):
@@ -61,7 +73,7 @@ class Game:
             color = self.activeShape.get_color(i)
             pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2) # it was giving me a parameter
                                                                                      # error here but I ignored it
-                                #might need to mess around with these numbers a little bit --> i added the offset because
+                                #might need to mess around with these numbers a littdddle bit --> i added the offset because
                                 # of the way the boarder mechanic works
 
     def draw_grid(self):
@@ -74,7 +86,7 @@ class Game:
                     pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2)
 
     def shift_horizontal(self, left_or_right):
-        if self.activeShape.check_shift_shape(left_or_right):
+        if self.activeShape.check_shift_shape(left_or_right, self.grid):
             self.activeShape.shift_shape(left_or_right)
 
     #what the game does to move the shapes down every second
@@ -120,7 +132,7 @@ class Game:
 
     def row_clear(self):
         row = []
-        for r in range(20):         #there are errors arising with this method
+        for r in range(20):
             clear = True
             for c in range(10):
                 if self.grid.get_bin(r,c) == 0:
@@ -131,22 +143,32 @@ class Game:
 
         self.shift_static_down(row)
 
+        self.LINES_CLEARED = self.LINES_CLEARED + len(row)
+        self.increase_level()
+
+        self.update_score(len(row))
+
+
+
     def shift_static_down(self, list1):
-        temp0 = []
-        temp1 = []
         for i in list1:
-            for c1 in range(10):
-                temp0.append(self.grid.get_bin(0, c1))
-            #temp0 = self.grid.get_bin(0,0)
-            for r in range(i):
+            for r in range(i,0,-1):
                 for c in range(10):
-                    # temp0 = self.grid.get_bin(r, c)
-                    temp1.append(self.grid.get_bin(r+1, c))
-                    self.grid.set_bin(r+1, c, temp0[c])
-                temp0 = temp1.copy()
-                temp1.clear()
-            for c in range(10):
-                self.grid.set_bin(0, c, 0)
+                    self.grid.set_bin(r,c,self.grid.get_bin(r-1,c))
+                    self.grid.set_color(r,c,self.grid.get_color(r-1,c))
+
+                for c1 in range(10):
+                    self.grid.set_bin(0,c1,0)
+                    self.grid.set_color(0,c1,(0, 0, 0))
+
+    def increase_level(self):
+        if self.LINES_CLEARED > 10:
+            self.level = self.level+1
+            self.LINES_CLEARED = 0
+
+
+    # ADD A METHOD TO CHANGE LEVEL AND SPEED
+
 
 
 
@@ -175,12 +197,14 @@ class Game:
                             self.rotate()
                         if event.key == pygame.K_s:
                             self.move_down()
-                    if event.type == GAME_TICK:
+                    if event.type == self.GAME_TICK:
                         self.shift_down()
                 if self.check_collision():
                     self.paste_onto_grid()
                     self.row_clear()
                     self.create_activeShape()
+
+
                     '''if self.check_game_over():
                         self.label_suface.blit(font.render("Game Over", True, BLACK), (0,0))
                         pause_toggle = False # stopped here --> this is all jank'''

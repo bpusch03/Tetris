@@ -14,8 +14,9 @@ FramePerSec = pygame.time.Clock()
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREY = (14, 14, 14)
 
-font = pygame.font.SysFont("Verdana", 60)
+font = pygame.font.SysFont("Verdana", 20)
 
 # these should be multiples of 10 and 20 respectivly (same multiples) --> just use common sense
 GAMEWIDTH = 400
@@ -42,7 +43,7 @@ class Game:
 
         self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
         self.level = 0
-        self.SPEED = 300
+        self.SPEED = 1000
         self.GAME_TICK = pygame.USEREVENT + 1
         pygame.time.set_timer(self.GAME_TICK, self.SPEED)
 
@@ -85,6 +86,18 @@ class Game:
                     color = self.grid.get_color(r,c)
                     pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2)
 
+    def draw_helper_lines(self):
+        x_values = []
+        for i in range(4):
+            x_values.append(self.activeShape.get_coords(i)[0])
+        x_values.sort()
+        print(x_values)
+        x1 = x_values[0] * SQUAREWIDTH
+        x2 = x_values[3] * SQUAREWIDTH + SQUAREWIDTH
+        pygame.draw.line(self.DISPLAY, GREY, (x1, 0), (x1, GAMEHEIGHT))
+        pygame.draw.line(self.DISPLAY, GREY, (x2, 0), (x2, GAMEHEIGHT))
+
+
     def shift_horizontal(self, left_or_right):
         if self.activeShape.check_shift_shape(left_or_right, self.grid):
             self.activeShape.shift_shape(left_or_right)
@@ -99,7 +112,13 @@ class Game:
 
     #user input --> shifts the active square all the way to the bottom
     def move_down(self):
-        pass
+        no_collision = True
+
+        while no_collision:
+            self.shift_down()
+            if self.check_collision():
+                break
+
 
     def check_collision(self):
         if self.check_collision_bottom_out_of_bounds() or self.check_collsion_bottom_static_squares():
@@ -167,58 +186,82 @@ class Game:
             self.LINES_CLEARED = 0
 
 
-    # ADD A METHOD TO CHANGE LEVEL AND SPEED
-
-
-
-
-    '''this method isn't actually necessary since it is the same as the collision method,
-            however I think it makes it more clear. The only important thing is when you call it, which is 
-            right after a new active shape object is created'''
-    def check_game_over(self):
-        return self.check_collsion_bottom_static_squares()
-
 
     def run_game(self):
         run = True
-        pause_toggle = True   # this is just temporary --> PROBABLY CAUSES AN ERROR IN THE RESTART
+
         while run:
-            if pause_toggle:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        quit()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_a:
-                            self.shift_horizontal(-1)
-                        if event.key == pygame.K_d:
-                            self.shift_horizontal(1)
-                        if event.key == pygame.K_w:
-                            self.rotate()
-                        if event.key == pygame.K_s:
-                            self.move_down()
-                    if event.type == self.GAME_TICK:
-                        self.shift_down()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_a:
+                        self.shift_horizontal(-1)
+                    if event.key == pygame.K_d:
+                        self.shift_horizontal(1)
+                    if event.key == pygame.K_w:
+                        self.rotate()
+                    if event.key == pygame.K_s:
+                        self.move_down()
+                if event.type == self.GAME_TICK:
+                    self.shift_down()
+            if self.check_collision():
+                self.paste_onto_grid()
+                self.row_clear()
+                self.create_activeShape()
                 if self.check_collision():
-                    self.paste_onto_grid()
-                    self.row_clear()
-                    self.create_activeShape()
+                    run = False
+
+            self.DISPLAY.fill(BLACK)
+            self.draw_scoreboard()
+            self.draw_activeShape()
+            self.draw_grid()
+            self.draw_helper_lines()
+
+            # self.create_activeShape()
+            pygame.display.update()
+            # clock.tick(FPS)
+
+        self.game_over()
+
+    def game_over(self):
+        reset = False
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        reset = True
+
+            self.DISPLAY.fill(BLACK)
+
+            score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
+            self.label_suface.fill(WHITE)
+            self.label_suface.blit(score_text, (0, GAMEHEIGHT / 2))  # how do I make this go in the center
+            self.label_suface.blit(font.render("Game Over: ", True, BLACK), (0, 0))
+            self.label_suface.blit(font.render("Press <Enter> to play again ", True, BLACK), (0, 40))
+            self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
 
 
-                    '''if self.check_game_over():
-                        self.label_suface.blit(font.render("Game Over", True, BLACK), (0,0))
-                        pause_toggle = False # stopped here --> this is all jank'''
+            self.draw_grid()
+            pygame.display.update()
+            if reset:
+                break
 
-                self.DISPLAY.fill(BLACK)
-                self.draw_scoreboard()
-                self.draw_activeShape()
-                self.draw_grid()
+        if reset:
+            self.reset_game()
+            self.run_game()
 
-                #self.create_activeShape()
-                pygame.display.update()
-                #clock.tick(FPS)
-
-
+    def reset_game(self):
+        self.grid.grid_reset()
+        self.create_activeShape()
+        self.score = 0
+        self.LINES_CLEARED = 0
+        self.level = 0
+        self.SPEED = 1000
 
 if __name__ == "__main__":
     tetris = Game()

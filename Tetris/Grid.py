@@ -2,15 +2,12 @@ import copy
 
 class Grid:
     def __init__(self):
-        rows = 20
-        cols = 10
         self.arr = []
-        for r in range(rows):
+        for r in range(20):
             self.arr.append([])
-            for c in range(cols):
-                self.arr[r].append([0,(0,0,0)])
-        '''self.arr = [col[[0,(0,0,0)]].clone()*cols].clone()*rows #the tuple is for RGB colors and the int tells the code whether to draw the
-                                             # square or not'''
+            for c in range(10):
+                self.arr[r].append([0, (0, 0, 0)]) #the tuple is for RGB colors and the int tells the code whether to draw the
+                                                # square or not
 
     def get_color(self,rows,cols):
         return self.arr[rows][cols][1]
@@ -33,6 +30,14 @@ class Grid:
     def print_grid(self): #just to be able to visualize what is going on
         for i in self.arr:
             print(i)
+
+    def grid_reset(self):
+        self.arr.clear()
+        for r in range(20):
+            self.arr.append([])
+            for c in range(10):
+                self.arr[r].append([0, (0, 0, 0)])
+
 
 
 if __name__ == "__main__":

@@ -10,6 +10,8 @@ FPS = 60
 FramePerSec = pygame.time.Clock()
 
 
+#Speed function
+f = lambda x: 1.24 - (.258* x) + (0.0188 * x**2) - ((4.69 * 10**-4) * x**3)
 
 
 WHITE = (255, 255, 255)
@@ -42,8 +44,9 @@ class Game:
         self.score = 0
 
         self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
-        self.level = 0
+        self.level = 1
         self.SPEED = 1000
+        print(self.SPEED)
         self.GAME_TICK = pygame.USEREVENT + 1
         pygame.time.set_timer(self.GAME_TICK, self.SPEED)
 
@@ -62,6 +65,7 @@ class Game:
             self.score = self.score + 300 * (self.level + 1)
         elif num_rows == 4:
             self.score = self.score + 1200 * (self.level + 1)
+
 
     def create_activeShape(self):
         self.activeShape = ActiveShape()
@@ -91,7 +95,6 @@ class Game:
         for i in range(4):
             x_values.append(self.activeShape.get_coords(i)[0])
         x_values.sort()
-        print(x_values)
         x1 = x_values[0] * SQUAREWIDTH
         x2 = x_values[3] * SQUAREWIDTH + SQUAREWIDTH
         pygame.draw.line(self.DISPLAY, GREY, (x1, 0), (x1, GAMEHEIGHT))
@@ -163,7 +166,7 @@ class Game:
         self.shift_static_down(row)
 
         self.LINES_CLEARED = self.LINES_CLEARED + len(row)
-        self.increase_level()
+        self.increase_level_and_update_speed()
 
         self.update_score(len(row))
 
@@ -180,10 +183,15 @@ class Game:
                     self.grid.set_bin(0,c1,0)
                     self.grid.set_color(0,c1,(0, 0, 0))
 
-    def increase_level(self):
+    def increase_level_and_update_speed(self):
         if self.LINES_CLEARED > 10:
             self.level = self.level+1
             self.LINES_CLEARED = 0
+            print("lines cleared")
+        if self.level > 0 and self.level < 16:
+            self.SPEED = int(f(self.level)*1000)
+            pygame.time.set_timer(self.GAME_TICK, self.SPEED)
+            print(self.SPEED)
 
 
 
@@ -260,9 +268,10 @@ class Game:
         self.create_activeShape()
         self.score = 0
         self.LINES_CLEARED = 0
-        self.level = 0
+        self.level = 1
         self.SPEED = 1000
 
 if __name__ == "__main__":
+    print(f(2)*1000)
     tetris = Game()
     tetris.run_game()

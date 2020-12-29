@@ -16,7 +16,7 @@ f = lambda x: 1.24 - (.258* x) + (0.0188 * x**2) - ((4.69 * 10**-4) * x**3)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-GREY = (14, 14, 14)
+GREY = (35, 35, 35)
 
 font = pygame.font.SysFont("Verdana", 20)
 

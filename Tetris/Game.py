@@ -35,7 +35,9 @@ class Game:
     def __init__(self):
         self.grid = Grid()
         self.activeShape = ActiveShape()
-        self.create_activeShape()
+        self.next_shape_num = 0
+        self.activeShape.create_shapes(random.randint(1, 7))
+        self.create_nextShape()
         self.DISPLAY = pygame.display.set_mode((GAMEWIDTH+UIWIDTH, GAMEHEIGHT))
         pygame.display.set_caption("Tetris")
         self.DISPLAY.fill(BLACK)
@@ -52,9 +54,36 @@ class Game:
 
     def draw_scoreboard(self):
         score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
+        temp_next_shape_text = font.render("Next Shape: {}".format(str(self.next_shape_num)), True, BLACK)
         self.label_suface.fill(WHITE)
         self.label_suface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
+        #self.label_suface.blit(temp_next_shape_text, (0, GAMEHEIGHT/3))
+        self.draw_next_shape(self.next_shape_num)
         self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
+
+    def draw_next_shape(self, shape_type):
+        if shape_type ==1:
+            image_surface = pygame.image.load('Tetris Pics/i-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==2:
+            image_surface = pygame.image.load('Tetris Pics/o-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==3:
+            image_surface = pygame.image.load('Tetris Pics/j-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==4:
+            image_surface = pygame.image.load('Tetris Pics/s-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==5:
+            image_surface = pygame.image.load('Tetris Pics/t-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==6:
+            image_surface = pygame.image.load('Tetris Pics/z-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+        if shape_type ==7:
+            image_surface = pygame.image.load('Tetris Pics/L-shape.png')
+            self.label_suface.blit(image_surface, (0, 600))
+
 
     def update_score(self, num_rows):  # don't know how the score works yet
         if num_rows == 1:
@@ -66,10 +95,12 @@ class Game:
         elif num_rows == 4:
             self.score = self.score + 1200 * (self.level + 1)
 
-
+    def create_nextShape(self):
+        self.next_shape_num = random.randint(1,7)
     def create_activeShape(self):
         self.activeShape = ActiveShape()
-        self.activeShape.create_shapes(random.randint(1,7))
+        self.activeShape.create_shapes(self.next_shape_num)
+        self.create_nextShape()
 
     def draw_activeShape(self):
         for i in range(4):

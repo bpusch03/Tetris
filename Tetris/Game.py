@@ -30,9 +30,8 @@ SQUAREWIDTH = GAMEWIDTH/10
 SQUAREHEIGHT = GAMEHEIGHT/20
 
 
-#im probably going to want to adda number list to show the next shapes that are coming
 class Game:
-    def __init__(self):
+    def __init__(self): # constructor for game class, initializes grid, active shape, speed, and scoring trackers
         self.grid = Grid()
         self.activeShape = ActiveShape()
         self.next_shape_num = 0
@@ -41,17 +40,16 @@ class Game:
         self.DISPLAY = pygame.display.set_mode((GAMEWIDTH+UIWIDTH, GAMEHEIGHT))
         pygame.display.set_caption("Tetris")
         self.DISPLAY.fill(BLACK)
-        # i don't have a game surface Surface object, im drawing right onto the display
-        self.label_suface = pygame.Surface((UIWIDTH, GAMEHEIGHT))
+        # no game surface Surface object, instead drawing right onto the display
+        self.label_surface = pygame.Surface((UIWIDTH, GAMEHEIGHT))
         self.score = 0
-
         self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
         self.level = 1
         self.SPEED = 1000
         self.GAME_TICK = pygame.USEREVENT + 1
         pygame.time.set_timer(self.GAME_TICK, self.SPEED)
 
-    def draw_scoreboard(self):
+    def draw_scoreboard(self): # draws scoreboard, includes text "Score:" and "Next shape:"
         score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
         next_shape_text = font.render("Next Shape: ", True, BLACK)
         self.label_suface.fill(WHITE)
@@ -61,7 +59,7 @@ class Game:
         self.draw_next_shape(self.next_shape_num, next_shape_text_width)
         self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
 
-    def draw_next_shape(self, shape_type, width):
+    def draw_next_shape(self, shape_type, width): # draws next shape outside of the grid to let player know what's coming
         if shape_type ==1:
             image_surface = pygame.image.load('Tetris Pics/i-shape.png')
             self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
@@ -85,7 +83,7 @@ class Game:
             self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
 
 
-    def update_score(self, num_rows):  # don't know how the score works yet
+    def update_score(self, num_rows):  # updates score every time the score changes to make scoreboard accurate
         if num_rows == 1:
             self.score = self.score + 40 * (self.level + 1)
         elif num_rows == 2:
@@ -95,24 +93,25 @@ class Game:
         elif num_rows == 4:
             self.score = self.score + 1200 * (self.level + 1)
 
-    def create_nextShape(self):
-        self.next_shape_num = random.randint(1,7)
-    def create_activeShape(self):
+    def create_nextShape(self): # generates random number from 1 to 7 to create the next shape
+        self.next_shape_num = random.randint(1, 7)
+
+    def create_activeShape(self): # creates the active shape based on what was the next shape
         self.activeShape = ActiveShape()
         self.activeShape.create_shapes(self.next_shape_num)
         self.create_nextShape()
 
-    def draw_activeShape(self):
+    def draw_activeShape(self): # draws the active shape at the top of the board
         for i in range(4):
             x = self.activeShape.get_coords(i)[0]*SQUAREWIDTH
             y = self.activeShape.get_coords(i)[1]*SQUAREHEIGHT
             color = self.activeShape.get_color(i)
-            pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2) # it was giving me a parameter
-                                                                                     # error here but I ignored it
-                                #might need to mess around with these numbers a littdddle bit --> i added the offset because
-                                # of the way the boarder mechanic works
+            pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2)
+            # it was giving me a parameter error here but I ignored it
+            # might need to mess around with these numbers a little bit --> i added the offset because
+            # of the way the boarder mechanic works
 
-    def draw_grid(self):
+    def draw_grid(self): # draws grid
         for r in range(20):
             for c in range(10):
                 x = c * SQUAREWIDTH
@@ -121,7 +120,7 @@ class Game:
                     color = self.grid.get_color(r,c)
                     pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2)
 
-    def draw_helper_lines(self):
+    def draw_helper_lines(self): # draws vertical grey lines to guide the active shape
         x_values = []
         for i in range(4):
             x_values.append(self.activeShape.get_coords(i)[0])
@@ -131,16 +130,16 @@ class Game:
         pygame.draw.line(self.DISPLAY, GREY, (x1, 0), (x1, GAMEHEIGHT))
         pygame.draw.line(self.DISPLAY, GREY, (x2, 0), (x2, GAMEHEIGHT))
 
-
+    # shifts the active shape left or right by one, depending on left or right
     def shift_horizontal(self, left_or_right):
         if self.activeShape.check_shift_shape(left_or_right, self.grid):
             self.activeShape.shift_shape(left_or_right)
 
-    #what the game does to move the shapes down every second
+    # what the game does to move the shapes down every second
     def shift_down(self):
         self.activeShape.game_shift_shape_down()
 
-    def rotate(self):
+    def rotate(self): # rotates active shape
         self.activeShape.rotate_shape(self.grid)
 
 
@@ -153,19 +152,20 @@ class Game:
             if self.check_collision():
                 break
 
-
+    # returns true if there is a collision, false if no collision when moving square to bottom
     def check_collision(self):
         if self.check_collision_bottom_out_of_bounds() or self.check_collsion_bottom_static_squares():
             return True
         return False
 
-    def check_collision_bottom_out_of_bounds(self):
+    def check_collision_bottom_out_of_bounds(self): # checks active shape to see if it travels out of the grid
         for i in range(4):
             y = self.activeShape.get_coords(i)[1]
             if y > 19:
                 return True
         return False
 
+    # checks active shape to see if it will collide with any static shapes
     def check_collsion_bottom_static_squares(self):
         for i in range(4):
             row = self.activeShape.get_coords(i)[1]
@@ -174,7 +174,7 @@ class Game:
                 return True
         return False
 
-    def paste_onto_grid(self):
+    def paste_onto_grid(self): # copies the active shape onto the grid as a static shape
         static_squares = self.activeShape.active_shape_one_up()
         color = self.activeShape.get_color(0)
         for i in range(4):
@@ -183,6 +183,8 @@ class Game:
             self.grid.set_bin(row, col, 1)
             self.grid.set_color(row,col,color)
 
+    # checks all rows to see if any are full, if full removes them, brings static shapes above that row down,
+    # updates score and updates speed
     def row_clear(self):
         row = []
         for r in range(20):
@@ -202,7 +204,7 @@ class Game:
         self.update_score(len(row))
 
 
-
+    # shift static shapes down when a row is cleared
     def shift_static_down(self, list1):
         for i in list1:
             for r in range(i,0,-1):
@@ -214,6 +216,7 @@ class Game:
                     self.grid.set_bin(0,c1,0)
                     self.grid.set_color(0,c1,(0, 0, 0))
 
+    # depending on the number of lines cleared, calculate level, determine speed
     def increase_level_and_update_speed(self):
         if self.LINES_CLEARED > 10:
             self.level = self.level+1
@@ -223,7 +226,7 @@ class Game:
             pygame.time.set_timer(self.GAME_TICK, self.SPEED)
 
 
-
+    # runs game
     def run_game(self):
         run = True
 
@@ -262,6 +265,7 @@ class Game:
 
         self.game_over()
 
+    # prints game over and gives option to reset game and play again
     def game_over(self):
         reset = False
         while True:
@@ -300,6 +304,6 @@ class Game:
         self.level = 1
         self.SPEED = 1000
 
-if __name__ == "__main__":
+if __name__ == "__main__": # initializes game
     tetris = Game()
     tetris.run_game()

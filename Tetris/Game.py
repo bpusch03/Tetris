@@ -16,7 +16,7 @@ f = lambda x: 1.24 - (.258* x) + (0.0188 * x**2) - ((4.69 * 10**-4) * x**3)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-GREY = (35, 35, 35)
+GREY = (38, 38, 38)
 
 font = pygame.font.SysFont("Verdana", 20)
 
@@ -48,41 +48,41 @@ class Game:
         self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
         self.level = 1
         self.SPEED = 1000
-        print(self.SPEED)
         self.GAME_TICK = pygame.USEREVENT + 1
         pygame.time.set_timer(self.GAME_TICK, self.SPEED)
 
     def draw_scoreboard(self):
         score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
-        temp_next_shape_text = font.render("Next Shape: {}".format(str(self.next_shape_num)), True, BLACK)
+        next_shape_text = font.render("Next Shape: ", True, BLACK)
         self.label_suface.fill(WHITE)
         self.label_suface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
-        #self.label_suface.blit(temp_next_shape_text, (0, GAMEHEIGHT/3))
-        self.draw_next_shape(self.next_shape_num)
+        self.label_suface.blit(next_shape_text, (0, GAMEHEIGHT/3))
+        next_shape_text_width = pygame.font.Font.size(font,"Next Shape: ")[0]
+        self.draw_next_shape(self.next_shape_num, next_shape_text_width)
         self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
 
-    def draw_next_shape(self, shape_type):
+    def draw_next_shape(self, shape_type, width):
         if shape_type ==1:
             image_surface = pygame.image.load('Tetris Pics/i-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==2:
             image_surface = pygame.image.load('Tetris Pics/o-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==3:
             image_surface = pygame.image.load('Tetris Pics/j-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==4:
             image_surface = pygame.image.load('Tetris Pics/s-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==5:
             image_surface = pygame.image.load('Tetris Pics/t-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==6:
             image_surface = pygame.image.load('Tetris Pics/z-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==7:
             image_surface = pygame.image.load('Tetris Pics/L-shape.png')
-            self.label_suface.blit(image_surface, (0, 600))
+            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
 
 
     def update_score(self, num_rows):  # don't know how the score works yet
@@ -218,11 +218,9 @@ class Game:
         if self.LINES_CLEARED > 10:
             self.level = self.level+1
             self.LINES_CLEARED = 0
-            print("lines cleared")
         if self.level > 0 and self.level < 16:
             self.SPEED = int(f(self.level)*1000)
             pygame.time.set_timer(self.GAME_TICK, self.SPEED)
-            print(self.SPEED)
 
 
 
@@ -303,6 +301,5 @@ class Game:
         self.SPEED = 1000
 
 if __name__ == "__main__":
-    print(f(2)*1000)
     tetris = Game()
     tetris.run_game()

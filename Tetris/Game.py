@@ -43,7 +43,7 @@ class Game:
         # no game surface Surface object, instead drawing right onto the display
         self.label_surface = pygame.Surface((UIWIDTH, GAMEHEIGHT))
         self.score = 0
-        self.LINES_CLEARED = 0         # this should be config but i had to make it an attribute of the game class
+        self.LINES_CLEARED = 0
         self.level = 1
         self.SPEED = 1000
         self.GAME_TICK = pygame.USEREVENT + 1
@@ -52,35 +52,35 @@ class Game:
     def draw_scoreboard(self): # draws scoreboard, includes text "Score:" and "Next shape:"
         score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
         next_shape_text = font.render("Next Shape: ", True, BLACK)
-        self.label_suface.fill(WHITE)
-        self.label_suface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
-        self.label_suface.blit(next_shape_text, (0, GAMEHEIGHT/3))
+        self.label_surface.fill(WHITE)
+        self.label_surface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
+        self.label_surface.blit(next_shape_text, (0, GAMEHEIGHT/3))
         next_shape_text_width = pygame.font.Font.size(font,"Next Shape: ")[0]
         self.draw_next_shape(self.next_shape_num, next_shape_text_width)
-        self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
+        self.DISPLAY.blit(self.label_surface, (GAMEWIDTH, 0))
 
     def draw_next_shape(self, shape_type, width): # draws next shape outside of the grid to let player know what's coming
         if shape_type ==1:
             image_surface = pygame.image.load('Tetris Pics/i-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==2:
             image_surface = pygame.image.load('Tetris Pics/o-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==3:
             image_surface = pygame.image.load('Tetris Pics/j-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==4:
             image_surface = pygame.image.load('Tetris Pics/s-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==5:
             image_surface = pygame.image.load('Tetris Pics/t-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==6:
             image_surface = pygame.image.load('Tetris Pics/z-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
         if shape_type ==7:
             image_surface = pygame.image.load('Tetris Pics/L-shape.png')
-            self.label_suface.blit(image_surface, (width, GAMEHEIGHT/3))
+            self.label_surface.blit(image_surface, (width, GAMEHEIGHT/3))
 
 
     def update_score(self, num_rows):  # updates score every time the score changes to make scoreboard accurate
@@ -280,11 +280,11 @@ class Game:
             self.DISPLAY.fill(BLACK)
 
             score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
-            self.label_suface.fill(WHITE)
-            self.label_suface.blit(score_text, (0, GAMEHEIGHT / 2))  # how do I make this go in the center
-            self.label_suface.blit(font.render("Game Over: ", True, BLACK), (0, 0))
-            self.label_suface.blit(font.render("Press <Enter> to play again ", True, BLACK), (0, 40))
-            self.DISPLAY.blit(self.label_suface, (GAMEWIDTH, 0))
+            self.label_surface.fill(WHITE)
+            self.label_surface.blit(score_text, (0, GAMEHEIGHT / 2))  # how do I make this go in the center
+            self.label_surface.blit(font.render("Game Over: ", True, BLACK), (0, 0))
+            self.label_surface.blit(font.render("Press <Enter> to play again ", True, BLACK), (0, 40))
+            self.DISPLAY.blit(self.label_surface, (GAMEWIDTH, 0))
 
 
             self.draw_grid()

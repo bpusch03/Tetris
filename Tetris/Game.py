@@ -107,9 +107,7 @@ class Game:
             y = self.activeShape.get_coords(i)[1]*SQUAREHEIGHT
             color = self.activeShape.get_color(i)
             pygame.draw.rect(self.DISPLAY, color, [x+2, y+2, SQUAREWIDTH-4, SQUAREHEIGHT-4], 2)
-            # it was giving me a parameter error here but I ignored it
-            # might need to mess around with these numbers a little bit --> i added the offset because
-            # of the way the boarder mechanic works
+
 
     def draw_grid(self): # draws grid
         for r in range(20):

@@ -12,7 +12,7 @@ class ActiveShape():
         self.coords = [[[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)]]
         self.center_of_rotation = [0,0] # using the nintendo rotation system, kind of --> not really
         self.identifier = ''
-    def get_coords(self, index): # returns coordinates of first tile
+    def get_coords(self, index): # returns coordinates of indexed tile
         return self.coords[index][0]
 
     def get_color(self, index): # returns color in rgb format

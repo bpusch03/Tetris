@@ -53,8 +53,8 @@ class Game:
         score_text = font.render("Score: {}".format(str(self.score)), True, BLACK)
         next_shape_text = font.render("Next Shape: ", True, BLACK)
         self.label_surface.fill(WHITE)
-        self.label_surface.blit(score_text, (0, GAMEHEIGHT/2))  # how do I make this go in the center
-        self.label_surface.blit(next_shape_text, (0, GAMEHEIGHT/3))
+        self.label_surface.blit(score_text, (105, GAMEHEIGHT/2 + 50))  # how do I make this go in the center
+        self.label_surface.blit(next_shape_text, (95, GAMEHEIGHT/3 - 50))
         next_shape_text_width = pygame.font.Font.size(font,"Next Shape: ")[0]
         self.draw_next_shape(self.next_shape_num, next_shape_text_width)
         self.DISPLAY.blit(self.label_surface, (GAMEWIDTH, 0))

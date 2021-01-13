@@ -53,7 +53,7 @@ class ActiveShape():
         for i in range(4):
             self.coords[i][0][0] = self.coords[i][0][0] + shift
         self.center_of_rotation[0] = self.center_of_rotation[0]+ shift
-        #print(self.center_of_rotation)
+   
 
     # rotates the shape
     def rotate_shape(self,grid): #parameter is grid object

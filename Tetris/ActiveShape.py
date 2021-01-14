@@ -8,17 +8,17 @@ RED = (255, 0, 0)           # --> for the Z-block
 ORANGE = (255, 140, 0)      # --> for the L-block
 
 class ActiveShape():
-    def __init__(self):
+    def __init__(self): # constructor for active shape, contains coordinates, center of rotation
         self.coords = [[[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)], [[0, 0], (0, 0, 0)]]
         self.center_of_rotation = [0,0] # using the nintendo rotation system, kind of --> not really
         self.identifier = ''
-    def get_coords(self, index):
+    def get_coords(self, index): # returns coordinates of indexed tile
         return self.coords[index][0]
 
-    def get_color(self, index):
+    def get_color(self, index): # returns color in rgb format
         return self.coords[index][1]
 
-    def clone_coords(self):
+    def clone_coords(self): # returns a copy of self's coordinates
         cloned_list = [1, 2, 3, 4]
         for i in range(4):
             cloned_list[i] = self.get_coords(i)[:]
@@ -36,24 +36,26 @@ class ActiveShape():
 
         return True
 
-    def game_shift_shape_down(self):
+    def game_shift_shape_down(self): # shifts all of self's coordinates down by one
         for i in range(4):
             self.coords[i][0][1] = self.coords[i][0][1]+1
         self.center_of_rotation[1] = self.center_of_rotation[1]+1
 
-    def active_shape_one_up(self):
+    def active_shape_one_up(self): # shifts all of self's coordinates up by one
         shifted_shape = self.clone_coords()
         for i in range(4):
             shifted_shape[i][1] = shifted_shape[i][1] - 1
         return shifted_shape
         pass
 
+    # shifts coordinates by 1, direction depends on value of shift
     def shift_shape(self, shift): # shift - int (either 1 or -1)
         for i in range(4):
             self.coords[i][0][0] = self.coords[i][0][0] + shift
         self.center_of_rotation[0] = self.center_of_rotation[0]+ shift
-        #print(self.center_of_rotation)
+   
 
+    # rotates the shape
     def rotate_shape(self,grid): #parameter is grid object
         rotation_coords = [[0,0], [0,0], [0,0], [0,0]]
         rotation_matrix = [0,-1,1,0] # not really a matrix, going top row then bottom row
@@ -94,10 +96,7 @@ class ActiveShape():
                 y = rotation_coords[i][1] + self.center_of_rotation[1]
                 self.coords[i][0] = [x,y]
 
-
-
-
-
+    # creates a specific shape based on num
     # 1 = I block
     # 2 = O block
     # 3 = J block
@@ -135,7 +134,7 @@ class ActiveShape():
             self.center_of_rotation = [4, 1]
             self.coords = [[[4, 0], ORANGE], [[4, 1], ORANGE], [[4, 2], ORANGE], [[5, 2], ORANGE]]
 
-if __name__ == "__main__":
+if __name__ == "__main__": # initializes active shape
     a = ActiveShape()
     cloned = a.clone_coords()
     print(cloned)
